@@ -8,14 +8,42 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var users: [User] = []
+    @State private var newUserName: String = ""
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationView {
+            VStack {
+                
+                AddUserView(
+                    name: $newUserName,
+                    addAction: addUser
+                )
+                
+                List {
+                    ForEach($users) { $user in
+                        UserRowView(user: $user)
+                    }
+                    .onDelete(perform: deleteUser)
+                }
+                
+                AppStatsView(users: users)
+            }
+            .navigationTitle("Habit Tracker")
+            .padding()
         }
-        .padding()
+    }
+    
+    private func addUser() {
+        guard !newUserName.isEmpty else { return }
+        
+        users.append(User(name: newUserName, habits: []))
+        newUserName = ""
+    }
+    
+    private func deleteUser(at offsets: IndexSet) {
+        users.remove(atOffsets: offsets)
     }
 }
 
